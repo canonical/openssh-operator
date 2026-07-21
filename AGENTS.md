@@ -15,7 +15,6 @@ The target source layout is:
 ├── src
 │   ├── charm.py            # Entrypoint; defines OpenSSHCharm
 │   ├── config.py           # Application config (pydantic v2 dataclass)
-│   ├── constants.py        # Integration names, paths, fixed values
 │   ├── openssh.py          # Workload manager (OpenSSHManager, OpenSSHConfigManager)
 │   ├── integrations/       # Integration observers (UHPC010)
 │   │   ├── __init__.py
@@ -108,12 +107,12 @@ Follow PEP 8 and PEP 257, plus:
 
 Three groups, alphabetized (`ruff format` handles ordering): standard
 library, third-party, first-party (`ops`, `charmed_hpc_libs`, `pydantic`,
-charm modules such as `config`, `constants`, `openssh`, `integrations`,
+charm modules such as `config`, `openssh`, `integrations`,
 `operations`).
 
 ### Module naming
 
-Flat module names — `charm.py`, `config.py`, `constants.py`, `openssh.py`.
+Flat module names — `charm.py`, `config.py`, `openssh.py`.
 Observer packages use `integrations/` and `operations/` with `__init__.py`
 re-exporting the public observer classes. Do **not** use the `_`-prefix
 convention; the public API of each module is its top-level surface.

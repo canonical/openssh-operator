@@ -71,9 +71,9 @@ unit *args: lock
     set -euxo pipefail
 
     {{ uv_run }} coverage run \
-        --source={{ src_dir }} \
         -m pytest -v --tb native -s \
-        {{ args }} {{ tests_dir / "unit" }}
+        {{ args }} {{ tests_dir / "unit" }} {{ project_dir / "pkg" / "ssh-config" / "tests" / "unit" }}
+
     {{ uv_run }} coverage report
 
 # Run integration tests

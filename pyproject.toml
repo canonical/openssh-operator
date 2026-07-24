@@ -15,10 +15,15 @@
 [project]
 name = "openssh-operator"
 version = "0.0.1"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 
 dependencies = [
-    "ops~=3.7",
+    "charmed-hpc-libs[errors] ~= 0.5",
+    "charmed-hpc-libs[interfaces] ~= 0.5",
+    "charmed-hpc-libs[ops] ~= 0.5",
+    "charmed-openssh-ssh-config-interface",
+    "ops ~= 3.0",
+    "pydantic ~= 2.0",
 ]
 
 [dependency-groups]
@@ -26,8 +31,12 @@ dev = [
     # Testing
     "coverage[toml]",
     "jubilant>=1.8,<2",
-    "ops[testing]",
+    "ops[testing] ~= 3.0",
+    "pyfakefs",
     "pytest",
+    "pytest-jubilant-bdd ~= 0.6",
+    "pytest-mock",
+    "pytest-order",
 
     # Linting
     "ruff",
@@ -35,10 +44,17 @@ dev = [
     "pyright",
 ]
 
+[tool.uv.workspace]
+members = ["pkg/*"]
+
+[tool.uv.sources]
+charmed-openssh-ssh-config-interface = { workspace = true }
+
 
 # Testing tools configuration
 [tool.coverage.run]
 branch = true
+source = ["src", "pkg"]
 
 [tool.coverage.report]
 show_missing = true
@@ -66,7 +82,7 @@ lint.ignore = [
     "D409",
     "D413",
 ]
-lint.per-file-ignores = {"tests/*" = ["D100","D101","D102","D103","D104"]}
+lint.per-file-ignores = {"**/tests/*" = ["D100","D101","D102","D103","D104"]}
 extend-exclude = ["__pycache__", "*.egg_info"]
 
 [tool.ruff.lint.mccabe]
@@ -76,4 +92,4 @@ max-complexity = 15
 skip = "build,lib,venv,icon.svg,.tox,.git,.mypy_cache,.ruff_cache,.coverage"
 
 [tool.pyright]
-include = ["src", "tests"]
+include = ["src", "pkg", "tests"]

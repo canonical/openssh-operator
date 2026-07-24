@@ -1,0 +1,81 @@
+# Copyright 2026 Canonical Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: openssh
+title: OpenSSH
+summary: >
+  Charmed OpenSSH is an open source operator designed to deploy and operate
+  OpenSSH daemon on machines.
+description: |
+  OpenSSH is the premier connectivity tool for remote login with the
+  SSH protocol. It encrypts all traffic to eliminate eavesdropping,
+  connection hijacking, and other attacks. In addition, OpenSSH provides
+  a large suite of secure tunneling capabilities, several authentication
+  methods, and sophisticated configuration options.
+
+  The OpenSSH operator is a subordinate Juju charm that automates the full
+  lifecycle of the `ssh` service on Charmed HPC login and compute
+  nodes. It can be integrated with `sssd` to provide SSH-based authentication for
+  remote users whose credentials are stored in external directory services.
+
+links:
+  contact: https://matrix.to/#/#hpc:ubuntu.com
+  documentation: https://ubuntu.com/hpc/docs/latest
+  source: https://github.com/canonical/openssh-operator
+  issues: https://github.com/canonical/openssh-operator/issues
+  website: https://ubuntu.com/hpc
+
+subordinate: true
+type: charm
+base: ubuntu@26.04
+platforms:
+  amd64:
+  arm64:
+
+assumes:
+  - juju >= 3.6
+
+parts:
+  charm:
+    plugin: uv
+    source: .
+    build-snaps:
+      - astral-uv
+
+requires:
+  juju-info:
+    interface: juju-info
+    scope: container
+
+provides:
+  ssh-config:
+    interface: ssh_config
+
+config:
+  options:
+    log-level:
+      description: |
+        Log level for the OpenSSH daemon. Valid values are `quiet`,
+        `fatal`, `error`, `info`, `verbose`, `debug`, `debug1`,
+        `debug2`, and `debug3`. Levels `debug` and above may emit
+        sensitive user data and should not be used in production.
+      type: string
+      default: info
+    port:
+      description: |
+        Port number for the OpenSSH daemon to listen on. Use `22`
+        for the default port, or a port between `1024` and `65535`
+        for a non-standard port.
+      type: int
+      default: 22

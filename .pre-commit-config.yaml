@@ -15,18 +15,27 @@
 repos:
   - repo: local
     hooks:
-      - id: lint
-        name: Lint
-        entry: just lint
+      - id: check
+        name: just check
+        entry: Charm checks
         language: system
         files: '\.py$'
-      - id: typecheck
-        name: Typecheck
-        entry: just typecheck
+        pass_filenames: false
+      - id: test
+        name: Charm tests
+        entry: just test unit
         language: system
         files: '\.py$'
-      - id: unit
-        name: Unit tests
-        entry: just unit
+        pass_filenames: false
+      - id: gherkinator-validate
+        name: Validate test plans
+        entry: just gherkinator validate
         language: system
-        files: '\.py$'
+        files: '^tests/integration/plans/[^/]*\.ya?ml$'
+        pass_filenames: false
+      - id: gherkinator-diff
+        name: Check test plans against generated feature files
+        entry: just gherkinator diff
+        language: system
+        files: '^tests/integration/(features|plans)/[^/]*\.(ya?ml|feature)$'
+        pass_filenames: false

@@ -16,8 +16,8 @@ repos:
   - repo: local
     hooks:
       - id: check
-        name: just check
-        entry: Charm checks
+        name: Charm checks
+        entry: just check
         language: system
         files: '\.py$'
         pass_filenames: false

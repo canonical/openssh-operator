@@ -20,6 +20,7 @@ uv := require("uv")
 
 project_dir := justfile_directory()
 src_dir := project_dir / "src"
+pkg_dir := project_dir / "pkg"
 tests_dir := project_dir / "tests"
 
 export PY_COLORS := "1"
@@ -108,14 +109,14 @@ upgrade:
 
 # Apply formatting standards
 fmt: lock
-    {{ uv_run }} ruff format {{ src_dir }} {{ tests_dir }}
-    {{ uv_run }} ruff check --fix {{ src_dir }} {{ tests_dir }}
+    {{ uv_run }} ruff format {{ src_dir }} {{ pkg_dir }} {{ tests_dir }}
+    {{ uv_run }} ruff check --fix {{ src_dir }} {{ pkg_dir }} {{ tests_dir }}
 
 # Check files against style standards
 lint: lock
     {{ uv_run }} codespell {{ project_dir }}
-    {{ uv_run }} ruff check {{ src_dir }} {{ tests_dir }}
-    {{ uv_run }} ruff format --check --diff {{ src_dir }} {{ tests_dir }}
+    {{ uv_run }} ruff check {{ src_dir }} {{ pkg_dir }} {{ tests_dir }}
+    {{ uv_run }} ruff format --check --diff {{ src_dir }} {{ pkg_dir }} {{ tests_dir }}
 
 # Perform type checking
 typecheck: lock

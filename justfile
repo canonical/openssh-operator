@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Manage charm test plans with gherkinator
+mod gherkinator "tests/integration"
+
 uv := require("uv")
 
 project_dir := justfile_directory()
@@ -42,7 +45,7 @@ clean:
     find . -name __pycache__ -type d -exec rm -rf {} + || true
 
 # Apply static checks
-check: fmt lint typecheck
+check: lint typecheck
 
 # Run tests for specified targets, or all tests if none specified
 test *targets:

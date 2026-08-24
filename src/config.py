@@ -29,8 +29,8 @@ _logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
-class CharmConfigManager:
-    """Manage a charmed ``openssh`` application's configuration options.
+class ConfigData:
+    """Charm configuration data.
 
     Attributes:
         port: Port number the ``ssh`` service listens on.

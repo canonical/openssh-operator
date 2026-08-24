@@ -15,17 +15,13 @@
 
 """Charmed operator for ``openssh``."""
 
-import logging
-
 import ops
-from pydantic import ValidationError
+from charmed_hpc_libs.ops import ConfigObserver
 
-from config import CharmConfigManager
+from config import ConfigData
 from integrations import SSHConfigObserver
 from openssh import OpenSSHManager
 from operations import LifecycleObserver
-
-_logger = logging.getLogger(__name__)
 
 
 class OpenSSHCharm(ops.CharmBase):
@@ -35,18 +31,7 @@ class OpenSSHCharm(ops.CharmBase):
         super().__init__(framework)
 
         self.openssh = OpenSSHManager()
-        try:
-            self.app_config = self.load_config(CharmConfigManager)
-        except ValidationError as e:
-            _logger.error(e)
-            failed_options = sorted({error["loc"][0] for error in e.errors() if error.get("loc")})
-            self.unit.status = ops.BlockedStatus(
-                "Configuration option(s) "
-                + ", ".join(f"'{str(o).replace('_', '-')}'" for o in failed_options)
-                + " failed validation. See `juju debug-log` for details"
-            )
-            return
-
+        self.typed_config = ConfigObserver(self, ConfigData)
         self.lifecycle = LifecycleObserver(self)
         self.ssh_config = SSHConfigObserver(self)
 

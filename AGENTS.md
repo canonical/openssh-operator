@@ -67,15 +67,19 @@ the structure laid out in UHPC014:
 1. **`charm.py` is an entrypoint, not a handler dump.** All integration and
    charm-lifecycle event handlers live in observer classes under
    `src/integrations/` and `src/operations/`. `OpenSSHCharm.__init__` wires up
-   the `OpenSSHManager`, loads the application config via `load_config`, and
-   instantiates the observers — nothing else.
+   the `OpenSSHManager`, instantiates a `ConfigObserver` (UHPC 016) as
+   `typed_config`, and instantiates the observers — nothing else. Configuration
+   validation is **lazy**: `ConfigObserver.load()` is called inside the event
+   handlers that need config data, and raises `StopCharm` on validation failure
+   rather than short-circuiting `__init__`.
 2. **Workload logic is standalone.** `OpenSSHManager` (in `openssh.py`) owns
    all `openssh`/`sshd` service operations (install, reload, port, log level,
    config file management). It must be usable outside the context of a charm.
 3. **Application config is validated with `pydantic` v2.** A frozen
    `pydantic.dataclasses.dataclass` in `config.py` validates config options;
-   validation failures set a `BlockedStatus` and short-circuit `__init__`.
-   Defaults live in `charmcraft.yaml`, not in the dataclass.
+   validation failures raise `StopCharm` (via `ConfigObserver.load()`) and set a
+   `BlockedStatus` when a handler loads config. Defaults live in
+   `charmcraft.yaml`, not in the dataclass.
 4. **Integrations are observers.** Each relation (`ssh-config`, `juju-info`,
    …) has an observer under `src/integrations/` that wraps the corresponding
    `Interface` from `charmed-hpc-libs` (or a vendored `lib/` library) and

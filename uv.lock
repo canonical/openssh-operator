@@ -23,11 +23,11 @@ wheels = [
 
 [[package]]
 name = "charmed-hpc-libs"
-version = "0.5.0"
+version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/03/7a/ac2abd0d2c0e17013ea04d50bb69951d92c6ebc5b2e9d9e26834c5a37c8b/charmed_hpc_libs-0.5.0.tar.gz", hash = "sha256:dd090e599badcd195b5546823a433d5effb5c96e01db353461310de13b5b88a8", size = 53736, upload-time = "2026-07-22T15:47:01.92Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e3/97/e6e002e36ee99da5e23b5da74e77c06db9bd0629b5ffab778881cc0db480/charmed_hpc_libs-0.7.1.tar.gz", hash = "sha256:010d550f2b5cf1ff8dfbb0b01426b9b66deb4071865ace8370c82de005fee04c", size = 64499, upload-time = "2026-08-19T19:38:05.146Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/80/74/857e3b470a2523dd3f0ee57ab48ce365a6b31d891840bbfc82142186ac42/charmed_hpc_libs-0.5.0-py3-none-any.whl", hash = "sha256:eb8cb147a5caaa5cab24f53c9ecea76217cac2e84e0a853d21b4f4df9d394c3b", size = 31514, upload-time = "2026-07-22T15:47:00.861Z" },
+    { url = "https://files.pythonhosted.org/packages/19/47/31788cd09344bc522414344549167ff81dc0fc94b3aa3968c31ce0bb4478/charmed_hpc_libs-0.7.1-py3-none-any.whl", hash = "sha256:a24bb20bf8e510d734f2dea5f6156e736d8c18c0ef778bed8bc218a34d011e87", size = 33938, upload-time = "2026-08-19T19:38:03.981Z" },
 ]
 
 [package.optional-dependencies]
@@ -36,6 +36,7 @@ interfaces = [
 ]
 ops = [
     { name = "ops" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
 ]

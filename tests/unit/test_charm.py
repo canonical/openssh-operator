@@ -26,12 +26,13 @@ def test_charm_instantiates_with_valid_config(mock_openssh) -> None:
 
 
 def test_charm_blocked_on_invalid_config(mock_openssh) -> None:
-    """The charm sets ``BlockedStatus`` and short-circuits on invalid config."""
+    """The charm sets ``BlockedStatus`` when a handler loads invalid config."""
     ctx = ops.testing.Context(OpenSSHCharm, config=_CONFIG_SCHEMA, meta=_META)
     # port=23 passes the Juju int schema but fails the pydantic validation
-    # (must be exactly 22 or between 1024-65535).
+    # (must be exactly 22 or between 1024-65535). Validation is lazy: it is
+    # surfaced when `_on_config_changed` calls `ConfigObserver.load()`.
     state_in = ops.testing.State(config={"port": 23, "log-level": "info"})
-    state_out = ctx.run(ctx.on.start(), state_in)
+    state_out = ctx.run(ctx.on.config_changed(), state_in)
     assert state_out.unit_status == ops.BlockedStatus(
         "Configuration option(s) 'port' failed validation. See `juju debug-log` for details"
     )

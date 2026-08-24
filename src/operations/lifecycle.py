@@ -56,14 +56,16 @@ class LifecycleObserver(OpenSSHObserver):
     @refresh
     def _on_config_changed(self, _: ops.ConfigChangedEvent) -> None:
         """Apply configuration changes to the ``ssh`` service."""
-        self.charm.openssh.log_level = self.charm.app_config.log_level
+        config = self.charm.typed_config.load()
 
-        if self.charm.app_config.port == 22:
+        self.charm.openssh.log_level = config.log_level
+
+        if config.port == 22:
             del self.charm.openssh.port
         else:
-            self.charm.openssh.port = self.charm.app_config.port
+            self.charm.openssh.port = config.port
 
-        self.charm.unit.open_port("tcp", self.charm.app_config.port)
+        self.charm.unit.open_port("tcp", config.port)
         self.charm.openssh.service.reload()
 
     @refresh

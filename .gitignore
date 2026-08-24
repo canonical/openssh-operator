@@ -7,6 +7,7 @@ __pycache__/
 *.py[cod]
 .idea
 .vscode/
+.zed/
 .charmhub.secret
 
 # Terraform state and provider cache

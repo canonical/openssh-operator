@@ -18,10 +18,10 @@ import logging
 from typing import TYPE_CHECKING
 
 import ops
-from charmed_hpc_libs.ops import StopCharm
+from charmed_hpc_libs.ops import Observer, StopCharm
 
 from openssh import OpenSSHOpsError
-from state import OpenSSHObserver, refresh
+from state import refresh
 
 if TYPE_CHECKING:
     from charm import OpenSSHCharm
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
-class LifecycleObserver(OpenSSHObserver):
+class LifecycleObserver(Observer):
     """Observe charm lifecycle events."""
 
     def __init__(self, charm: "OpenSSHCharm") -> None:

@@ -18,7 +18,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import ops
-from charmed_hpc_libs.ops import StopCharm
+from charmed_hpc_libs.ops import Observer, StopCharm
 from charmed_openssh_ssh_config_interface import (
     SSHConfigDisconnectedEvent,
     SSHConfigReadyEvent,
@@ -26,7 +26,7 @@ from charmed_openssh_ssh_config_interface import (
 )
 
 from openssh import OpenSSHOpsError
-from state import OpenSSHObserver, refresh
+from state import refresh
 
 if TYPE_CHECKING:
     from charm import OpenSSHCharm
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
-class SSHConfigObserver(OpenSSHObserver):
+class SSHConfigObserver(Observer):
     """Observe ``ssh-config`` integration events."""
 
     def __init__(self, charm: "OpenSSHCharm") -> None:

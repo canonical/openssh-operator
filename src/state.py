@@ -14,29 +14,11 @@
 
 """Manage the state of the ``openssh`` charmed operator."""
 
-from typing import TYPE_CHECKING
-
 import ops
-from charmed_hpc_libs.ops import refresh
-
-if TYPE_CHECKING:
-    from charm import OpenSSHCharm
+from charmed_hpc_libs.ops import Observer, refresh
 
 
-class OpenSSHObserver(ops.Object):
-    """Base observer class for ``openssh`` charm event observers."""
-
-    def __init__(self, charm: "OpenSSHCharm") -> None:
-        super().__init__(charm, f"{type(charm).__name__}")
-        self._charm = charm
-
-    @property
-    def charm(self) -> "OpenSSHCharm":
-        """Charm object being observed."""
-        return self._charm
-
-
-def check_openssh(observer: "OpenSSHObserver") -> ops.StatusBase:
+def check_openssh(observer: Observer) -> ops.StatusBase:
     """Determine the state of the ``openssh`` application/unit.
 
     Args:

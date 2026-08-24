@@ -24,7 +24,9 @@ from charmed_openssh_ssh_config_interface import (
 from ops import testing
 
 SSH_CONFIG_INTEGRATION_NAME = "ssh-config"
-EXAMPLE_SSH_CONFIG = SSHConfigData(ssh_config="AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys\n")
+EXAMPLE_SSH_CONFIG = SSHConfigData(
+    ssh_config="AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys\n"
+)
 
 
 class _MockProviderCharm(ops.CharmBase):
@@ -39,9 +41,7 @@ class _MockProviderCharm(ops.CharmBase):
         )
 
     def _on_relation_created(self, event: ops.RelationCreatedEvent) -> None:
-        self._ssh_config.set_config_data(
-            EXAMPLE_SSH_CONFIG, integration_id=event.relation.id
-        )
+        self._ssh_config.set_config_data(EXAMPLE_SSH_CONFIG, integration_id=event.relation.id)
 
 
 @pytest.fixture(scope="function")
@@ -59,7 +59,9 @@ def provider_ctx() -> testing.Context[_MockProviderCharm]:
 class TestSSHConfigProvider:
     """Tests for ``SSHConfigProvider``."""
 
-    @pytest.mark.parametrize("leader", [pytest.param(True, id="leader"), pytest.param(False, id="not-leader")])
+    @pytest.mark.parametrize(
+        "leader", [pytest.param(True, id="leader"), pytest.param(False, id="not-leader")]
+    )
     def test_set_config_data(self, provider_ctx: testing.Context, leader: bool) -> None:
         """Data is written to the app databag only when the unit is leader."""
         relation = testing.Relation(
@@ -68,9 +70,7 @@ class TestSSHConfigProvider:
             remote_app_name="requirer",
         )
         state_in = testing.State(leader=leader, relations={relation})
-        state_out = provider_ctx.run(
-            provider_ctx.on.relation_created(relation), state_in
-        )
+        state_out = provider_ctx.run(provider_ctx.on.relation_created(relation), state_in)
 
         rel = state_out.get_relation(relation.id)
         if leader:

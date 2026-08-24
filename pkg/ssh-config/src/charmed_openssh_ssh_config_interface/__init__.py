@@ -23,14 +23,12 @@ __all__ = [
     "SSHConfigRequirer",
 ]
 
-import logging
+from typing import Any
 
 import ops
 from charmed_hpc_libs.interfaces import Interface
 from charmed_hpc_libs.ops import leader
 from pydantic.dataclasses import dataclass
-
-_logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -90,8 +88,12 @@ class SSHConfigProvider(Interface):
         self.on.ssh_config_connected.emit(event.relation)
 
     @leader
-    def set_config_data(
-        self, data: SSHConfigData, /, integration_id: int | None = None
+    def set_config_data(  # noqa: D417
+        self,
+        data: SSHConfigData,
+        /,
+        integration_id: int | None = None,
+        **kwargs: Any,
     ) -> None:
         """Set custom SSH configuration data in the application databag.
 
@@ -100,8 +102,19 @@ class SSHConfigProvider(Interface):
             integration_id:
                 Optional integration ID to target a specific
                 relation instance.
+
+        Keyword Args:
+            merge:
+                Whether to merge ``data`` into the integration databag rather than
+                overwriting. When ``True``, only fields whose values differ from their
+                dataclass defaults are written; existing values for unset fields are
+                preserved. Defaults to ``False``.
+            reset:
+                Set of dataclass fields to reset to their default value when
+                ``merge`` is ``True``. Has precedence over `data`. Defaults to an
+                empty set.
         """
-        self._save_integration_data(data, self.app, integration_id)
+        self._save_integration_data(data, self.app, integration_id, **kwargs)
 
 
 class SSHConfigRequirer(Interface):

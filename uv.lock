@@ -281,7 +281,6 @@ dev = [
     { name = "pytest" },
     { name = "pytest-jubilant-bdd" },
     { name = "pytest-mock" },
-    { name = "pytest-order" },
     { name = "ruff" },
 ]
 
@@ -304,9 +303,8 @@ dev = [
     { name = "pyfakefs" },
     { name = "pyright" },
     { name = "pytest" },
-    { name = "pytest-jubilant-bdd", specifier = "~=0.6" },
+    { name = "pytest-jubilant-bdd", specifier = "~=0.9" },
     { name = "pytest-mock" },
-    { name = "pytest-order" },
     { name = "ruff" },
 ]
 
@@ -552,15 +550,15 @@ wheels = [
 
 [[package]]
 name = "pytest-jubilant-bdd"
-version = "0.6.1"
+version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jubilant" },
     { name = "pytest-bdd" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/99/47/a6c32a93770752c7aa1c8e84404714075b05145a0939a5e5ed92e92f4d10/pytest_jubilant_bdd-0.6.1.tar.gz", hash = "sha256:83a2f242bd83375b7f42c33cc47aeb2a68eda82784ac4268a36b90a5e3cebff7", size = 20501, upload-time = "2026-07-07T21:05:06.414Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ee/10/282683c1625b3ba81057245cccdc8f706e97b102d143798442644c59df70/pytest_jubilant_bdd-0.9.0.tar.gz", hash = "sha256:02c2f28201d6db9042b359d6b757b423cae4bc275b74e8843bbf2aeed5f45517", size = 21012, upload-time = "2026-08-25T16:42:46.948Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/4c/bc9753fd6d447fe96d2a0f6d10b07bb87ad434b86055f93f6a0df6fefb8d/pytest_jubilant_bdd-0.6.1-py3-none-any.whl", hash = "sha256:6f51aefea23cfeaadda795d52d0f6529e61a9b37cc3835cd93019ded28a4f431", size = 23535, upload-time = "2026-07-07T21:05:05.536Z" },
+    { url = "https://files.pythonhosted.org/packages/28/ee/406fc29718c64652f0a8118976ad63cc226e406d4f305339428879b4178d/pytest_jubilant_bdd-0.9.0-py3-none-any.whl", hash = "sha256:3a7423561538aac65c076f6059223a5687b5ed01fc6d4a1a5f1b9fdc7a4bdc06", size = 23902, upload-time = "2026-08-25T16:42:46.023Z" },
 ]
 
 [[package]]
@@ -573,18 +571,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/68/14/eb014d26be205d38ad5ad20d9a80f7d201472e08167f0bb4361e251084a9/pytest_mock-3.15.1.tar.gz", hash = "sha256:1849a238f6f396da19762269de72cb1814ab44416fa73a8686deac10b0d87a0f", size = 34036, upload-time = "2025-09-16T16:37:27.081Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/cc/06253936f4a7fa2e0f48dfe6d851d9c56df896a9ab09ac019d70b760619c/pytest_mock-3.15.1-py3-none-any.whl", hash = "sha256:0a25e2eb88fe5168d535041d09a4529a188176ae608a6d249ee65abc0949630d", size = 10095, upload-time = "2025-09-16T16:37:25.734Z" },
-]
-
-[[package]]
-name = "pytest-order"
-version = "1.5.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/97/d8/82a5dc2aad3392f66c9741960fcbeeb45dd4d62eedb218aed6c52eea36eb/pytest_order-1.5.0.tar.gz", hash = "sha256:96acd7587b5a2855dcaa4a898288103d202894a61afd813adbc9b77aab04d90d", size = 54136, upload-time = "2026-06-13T05:39:41.636Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/5c/bd6a85b44beb8bd74c0e86ab699ef0e096e260dc90458b84fc54c28e4335/pytest_order-1.5.0-py3-none-any.whl", hash = "sha256:667ba2b7303fe2c529848663e0a41dfb0cc4d64f09f87272e4a9a1751efb52b2", size = 16634, upload-time = "2026-06-13T05:39:40.431Z" },
 ]
 
 [[package]]

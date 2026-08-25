@@ -34,9 +34,8 @@ dev = [
     "ops[testing] ~= 3.0",
     "pyfakefs",
     "pytest",
-    "pytest-jubilant-bdd ~= 0.6",
+    "pytest-jubilant-bdd ~= 0.9",
     "pytest-mock",
-    "pytest-order",
 
     # Linting
     "ruff",

@@ -1,0 +1,58 @@
+# Copyright 2026 Canonical Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+feature: "Functional edge tests"
+type: functional
+status: implemented
+risk: edge
+description: >
+  Functional tests for the edge risk level
+scenarios:
+  - |-
+    Deploy the OpenSSH charm with a principal charm
+
+    Given I pack an 'openssh' charm
+    And I add model 'openssh'
+    And I switch to model 'openssh'
+    And I deploy 'openssh' from a local charm located at 'openssh.charm'
+    And I deploy 'ubuntu' on base 'ubuntu@26.04' from channel 'latest/stable'
+    And I integrate 'openssh:juju-info' with 'ubuntu:juju-info'
+    Then all agents are 'idle' in model 'openssh'
+    And the workload status for app 'openssh' is 'active'
+    And the workload status message for app 'openssh' is ''
+
+  - |-
+    Change the OpenSSH log level
+
+    Given 'openssh' is deployed
+    And I set 'log-level' for app 'openssh' to 'verbose'
+    Then all agents are 'idle' in model 'openssh'
+    And the workload status for app 'openssh' is 'active'
+
+  - |-
+    Change the OpenSSH port number
+
+    Given 'openssh' is deployed
+    And I set 'port' for app 'openssh' to '2222'
+    Then all agents are 'idle' in model 'openssh'
+    And the workload status for app 'openssh' is 'active'
+
+  - |-
+    Reset the OpenSSH port to the default
+
+    Given 'port' for app 'openssh' is set to '2222'
+    And I set 'port' for app 'openssh' to '22'
+    Then all agents are 'idle' in model 'openssh'
+    And the workload status for app 'openssh' is 'active'

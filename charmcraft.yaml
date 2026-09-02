@@ -57,8 +57,6 @@ requires:
   juju-info:
     interface: juju-info
     scope: container
-
-provides:
   ssh-config:
     interface: ssh_config
 

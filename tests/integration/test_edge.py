@@ -15,7 +15,8 @@
 
 """``edge`` risk level tests for the OpenSSH charm."""
 
-from constants import EDGE_FEATURES
 from pytest_bdd import scenarios
+
+from constants import EDGE_FEATURES  # pyright: ignore[reportAttributeAccessIssue]
 
 scenarios(*EDGE_FEATURES)

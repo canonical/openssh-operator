@@ -52,20 +52,40 @@ class TestOpenSSHConfigManager:
         fs.create_dir(str(config_dir))
 
         manager = OpenSSHConfigManager()
-        manager.write("test.conf", "SomeDirective value\n")
+        manager.write("test", "SomeDirective value\n")
 
-        assert "test.conf" in [f.name for f in manager.files]
-        file_path = config_dir / "test.conf"
+        assert "99-charmed-openssh-test.conf" in [f.name for f in manager.files]
+        file_path = config_dir / "99-charmed-openssh-test.conf"
         assert file_path.read_text() == "SomeDirective value\n"
 
     def test_write_creates_directory(self, fs: FakeFilesystem) -> None:
         """Writing a config file creates the directory tree if needed."""
         manager = OpenSSHConfigManager()
-        manager.write("extra.conf", "# comment\n")
+        manager.write("extra", "# comment\n")
 
-        file_path = manager.path / "extra.conf"
+        file_path = manager.path / "99-charmed-openssh-extra.conf"
         assert file_path.exists()
         assert file_path.read_text() == "# comment\n"
+
+    def test_make_filename(self) -> None:
+        """Slugs are expanded into the charm's managed filename scheme."""
+        assert OpenSSHConfigManager._make_filename("test") == "99-charmed-openssh-test.conf"
+
+    def test_read(self, fs: FakeFilesystem) -> None:
+        """Reading a config file returns its content."""
+        manager = OpenSSHConfigManager()
+        manager.write("readable", "SomeDirective value\n")
+
+        assert manager.read("readable") == "SomeDirective value\n"
+
+    def test_read_missing_file_raises(self, fs: FakeFilesystem) -> None:
+        """Reading a non-existent config file raises ``OpenSSHOpsError``."""
+        config_dir = OpenSSHConfigManager().path
+        fs.create_dir(str(config_dir))
+
+        manager = OpenSSHConfigManager()
+        with pytest.raises(OpenSSHOpsError, match="failed to read"):
+            manager.read("nonexistent")
 
     def test_validate_success(self, mock_run: Mock) -> None:
         """``validate`` passes when ``sshd -t`` exits with code 0."""
@@ -86,25 +106,54 @@ class TestOpenSSHConfigManager:
         with pytest.raises(OpenSSHOpsError, match="invalid ssh server configuration"):
             manager.validate()
 
-    def test_remove(self, fs: FakeFilesystem) -> None:
-        """Removing a config file makes it disappear from ``files``."""
+    def test_delete(self, fs: FakeFilesystem) -> None:
+        """Deleting a config file makes it disappear from ``files``."""
         config_dir = OpenSSHConfigManager().path
         fs.create_dir(str(config_dir))
 
         manager = OpenSSHConfigManager()
-        manager.write("removable.conf", "data\n")
-        assert "removable.conf" in [f.name for f in manager.files]
+        manager.write("deletable", "data\n")
+        assert "99-charmed-openssh-deletable.conf" in [f.name for f in manager.files]
 
-        manager.remove("removable.conf")
-        assert "removable.conf" not in [f.name for f in manager.files]
+        manager.delete("deletable")
+        assert "99-charmed-openssh-deletable.conf" not in [f.name for f in manager.files]
 
-    def test_remove_idempotent(self, fs: FakeFilesystem) -> None:
-        """Removing a non-existent file does not raise."""
+    def test_delete_missing_file_raises(self, fs: FakeFilesystem) -> None:
+        """Deleting a non-existent config file raises ``OpenSSHOpsError``."""
         config_dir = OpenSSHConfigManager().path
         fs.create_dir(str(config_dir))
 
         manager = OpenSSHConfigManager()
-        manager.remove("nonexistent.conf")
+        with pytest.raises(OpenSSHOpsError, match="failed to delete"):
+            manager.delete("nonexistent")
+
+    def test_clear(self, fs: FakeFilesystem) -> None:
+        """Clearing deletes all managed files but leaves others untouched."""
+        config_dir = OpenSSHConfigManager().path
+        fs.create_dir(str(config_dir))
+
+        manager = OpenSSHConfigManager()
+        manager.write("log-level", "LogLevel debug\n")
+        manager.write("port", "Port 2222\n")
+        # Unmanaged files in the directory must not be touched by ``clear``.
+        unmanaged = config_dir / "10-unmanaged.conf"
+        unmanaged.write_text("Port 23\n")
+
+        manager.clear()
+
+        assert manager.files == []
+        assert unmanaged.read_text() == "Port 23\n"
+
+    def test_files_ignores_unmanaged(self, fs: FakeFilesystem) -> None:
+        """``files`` only lists configuration files managed by this charm."""
+        config_dir = OpenSSHConfigManager().path
+        fs.create_dir(str(config_dir))
+
+        manager = OpenSSHConfigManager()
+        manager.write("managed", "data\n")
+        (config_dir / "10-unmanaged.conf").write_text("other\n")
+
+        assert [f.name for f in manager.files] == ["99-charmed-openssh-managed.conf"]
 
     def test_files_empty_directory(self, fs: FakeFilesystem) -> None:
         """``files`` returns an empty list when directory is empty."""
@@ -124,7 +173,7 @@ class TestOpenSSHManager:
     """Tests for ``OpenSSHManager``."""
 
     def test_log_level_get_none_when_not_set(self) -> None:
-        """``log_level`` returns ``None`` when no ``log-level.conf`` exists."""
+        """``log_level`` returns ``None`` when no ``99-charmed-openssh-log-level.conf`` exists."""
         manager = OpenSSHManager()
         assert manager.log_level is None
 
@@ -137,7 +186,7 @@ class TestOpenSSHManager:
         manager.log_level = "debug"
         assert manager.log_level == "debug"
 
-        log_file = config_dir / "log-level.conf"
+        log_file = config_dir / "99-charmed-openssh-log-level.conf"
         assert log_file.read_text() == "LogLevel debug\n"
 
     def test_log_level_is_not_deletable(self) -> None:
@@ -147,7 +196,7 @@ class TestOpenSSHManager:
         assert prop.fdel is None
 
     def test_port_get_none_when_not_set(self) -> None:
-        """``port`` returns ``None`` when no ``port-override.conf`` exists."""
+        """``port`` returns ``None`` when no ``99-charmed-openssh-port.conf`` exists."""
         manager = OpenSSHManager()
         assert manager.port is None
 
@@ -160,23 +209,5 @@ class TestOpenSSHManager:
         manager.port = 2222
         assert manager.port == 2222
 
-        port_file = config_dir / "port-override.conf"
+        port_file = config_dir / "99-charmed-openssh-port.conf"
         assert port_file.read_text() == "Port 2222\n"
-
-    def test_port_delete(self, fs: FakeFilesystem) -> None:
-        """Deleting ``port`` removes the override file."""
-        config_dir = OpenSSHConfigManager().path
-        fs.create_dir(str(config_dir))
-
-        manager = OpenSSHManager()
-        manager.port = 2222
-        assert "port-override.conf" in [f.name for f in manager.config.files]
-
-        del manager.port
-        assert manager.port is None
-        assert "port-override.conf" not in [f.name for f in manager.config.files]
-
-    def test_port_delete_when_not_set(self) -> None:
-        """Deleting ``port`` when not set does not raise."""
-        manager = OpenSSHManager()
-        del manager.port

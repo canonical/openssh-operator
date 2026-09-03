@@ -14,7 +14,6 @@
 
 """Manage and operate the ``ssh`` service."""
 
-import logging
 import subprocess
 from functools import cached_property
 from pathlib import Path
@@ -22,7 +21,7 @@ from pathlib import Path
 from charmed_hpc_libs.errors import Error
 from charmed_hpc_libs.ops import AptLifecycleManager, SystemctlServiceManager
 
-logger = logging.getLogger(__name__)
+from constants import CONFIG_FILE_PREFIX, CONFIG_FILE_SUFFIX
 
 
 class OpenSSHOpsError(Error):
@@ -39,28 +38,47 @@ class OpenSSHConfigManager:
 
     @property
     def files(self) -> list[Path]:
-        """List of files in the ``ssh`` server configuration directory."""
+        """Get the list of custom SSH configurations managed by this charm."""
         try:
-            return [p for p in self.path.iterdir() if p.is_file()]
+            return [
+                p
+                for p in self.path.iterdir()
+                if p.is_file() and p.stem.startswith(CONFIG_FILE_PREFIX)
+            ]
         except OSError:
             return []
 
-    def write(self, name: str, content: str) -> None:
+    def read(self, slug: str) -> str:
+        """Read the content of a configuration file under ``/etc/ssh/ssh_config.d``.
+
+        Args:
+            slug: Slug of the file to read.
+
+        Raises:
+            OpenSSSOpsError: Raised if the configuration file cannot be read.
+        """
+        file = self.path / self._make_filename(slug)
+        try:
+            return file.read_text()
+        except OSError as e:
+            raise OpenSSHOpsError(f"failed to read '{file}'") from e
+
+    def write(self, slug: str, content: str) -> None:
         """Write a configuration file under ``/etc/ssh/ssh_config.d``.
 
         Args:
-            name: Name of the configuration file to write.
+            slug: Slug of file to write into.
             content: Content to write into the file.
 
         Raises:
             OpenSSHOpsError: Raised if the configuration file cannot be written.
         """
-        file = self.path / name
+        file = self.path / self._make_filename(slug)
         self.path.mkdir(parents=True, exist_ok=True)
         try:
             file.write_text(content)
         except OSError as e:
-            raise OpenSSHOpsError(f"failed to write '{file}'. reason: {e}") from e
+            raise OpenSSHOpsError(f"failed to write '{file}'") from e
 
     def validate(self) -> None:
         """Validate the ``ssh`` server configuration.
@@ -80,20 +98,41 @@ class OpenSSHConfigManager:
         if result.returncode != 0:
             raise OpenSSHOpsError(f"invalid ssh server configuration:\n{result.stderr.strip()}")
 
-    def remove(self, name: str) -> None:
-        """Remove a configuration file from ``/etc/ssh/ssh_config.d``.
+    def delete(self, slug: str) -> None:
+        """Delete a configuration file from ``/etc/ssh/ssh_config.d``.
 
         Args:
-            name: Name of the configuration file to remove.
+            slug: Slug of the configuration file to remove.
 
         Raises:
             OpenSSHOpsError: Raised if the configuration file cannot be removed.
         """
-        file = self.path / name
+        file = self.path / self._make_filename(slug)
         try:
-            file.unlink(missing_ok=True)
+            file.unlink()
         except OSError as e:
-            raise OpenSSHOpsError(f"failed to remove '{file}'. reason: {e}") from e
+            raise OpenSSHOpsError(f"failed to delete '{file}'") from e
+
+    def clear(self) -> None:
+        """Delete all custom SSH configuration files managed by this charm.
+
+        Raises:
+            OpenSSHOpsError: Raised if a configuration file cannot be removed.
+        """
+        for file in self.files:
+            try:
+                file.unlink()
+            except OSError as e:
+                raise OpenSSHOpsError(f"failed to delete '{file}'") from e
+
+    @staticmethod
+    def _make_filename(slug: str) -> str:
+        """Make a filename for configuration overrides managed by the OpenSSH charm.
+
+        Args:
+            slug: Slug to insert before the ``.conf`` suffix.
+        """
+        return f"{CONFIG_FILE_PREFIX}{slug}{CONFIG_FILE_SUFFIX}"
 
 
 class OpenSSHManager(AptLifecycleManager):
@@ -115,11 +154,11 @@ class OpenSSHManager(AptLifecycleManager):
     @property
     def log_level(self) -> str | None:
         """Get the log level of the ``ssh`` service."""
-        log_level_file = self.config.path / "log-level.conf"
-        if not log_level_file.is_file():
+        try:
+            content = self.config.read("log-level")
+        except OpenSSHOpsError:
             return None
 
-        content = log_level_file.read_text().strip()
         parts = content.split()
         if len(parts) >= 2 and parts[0] == "LogLevel":
             return parts[1]
@@ -133,16 +172,16 @@ class OpenSSHManager(AptLifecycleManager):
         Args:
             value: The log level to set.
         """
-        self.config.write("log-level.conf", f"LogLevel {value}\n")
+        self.config.write("log-level", f"LogLevel {value}\n")
 
     @property
     def port(self) -> int | None:
         """Get the port number the ``ssh`` service communicates on."""
-        port_file = self.config.path / "port-override.conf"
-        if not port_file.is_file():
+        try:
+            content = self.config.read("port")
+        except OpenSSHOpsError:
             return None
 
-        content = port_file.read_text().strip()
         parts = content.split()
         if len(parts) >= 2 and parts[0] == "Port":
             return int(parts[1])
@@ -156,12 +195,4 @@ class OpenSSHManager(AptLifecycleManager):
         Args:
             value: The port number to set.
         """
-        self.config.write("port-override.conf", f"Port {value}\n")
-
-    @port.deleter
-    def port(self) -> None:
-        """Unset the port number, restoring the default.
-
-        Removes the ``port-override.conf`` configuration file.
-        """
-        self.config.remove("port-override.conf")
+        self.config.write("port", f"Port {value}\n")

@@ -17,6 +17,9 @@
 from unittest.mock import Mock
 
 import pytest
+from ops import testing
+
+from charm import OpenSSHCharm
 
 
 class _MockOpenSSH:
@@ -29,7 +32,8 @@ class _MockOpenSSH:
 
         self.config = Mock()
         self.config.files = []
-        self.config.remove = Mock()
+        self.config.clear = Mock()
+        self.config.delete = Mock()
         self.config.write = Mock()
         self.config.validate = Mock()
 
@@ -60,6 +64,12 @@ class _MockOpenSSH:
     @port.deleter
     def port(self) -> None:
         self._port = None
+
+
+@pytest.fixture(scope="function")
+def mock_charm() -> testing.Context[OpenSSHCharm]:
+    """Mock ``OpenSSHCharm``."""
+    return testing.Context(OpenSSHCharm)
 
 
 @pytest.fixture(scope="function")

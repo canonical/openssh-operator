@@ -57,13 +57,13 @@ class SSHConfigObserver(Observer):
         if data is None:
             return
 
-        filename = self._make_filename(event.relation)
-        self.charm.openssh.config.write(filename, f"{data.ssh_config}\n")
+        slug = self._make_slug(event.relation)
+        self.charm.openssh.config.write(slug, f"{data.ssh_config}\n")
 
         try:
             self.charm.openssh.config.validate()
         except OpenSSHOpsError:
-            self.charm.openssh.config.remove(filename)
+            self.charm.openssh.config.delete(slug)
             raise StopCharm(
                 ops.BlockedStatus(
                     "Invalid SSH configuration received from "
@@ -77,11 +77,11 @@ class SSHConfigObserver(Observer):
     @refresh
     def _on_ssh_config_provider_disconnected(self, event: SSHConfigDisconnectedEvent) -> None:
         """Remove custom SSH configuration when the provider departs."""
-        filename = self._make_filename(event.relation)
-        self.charm.openssh.config.remove(filename)
+        slug = self._make_slug(event.relation)
+        self.charm.openssh.config.delete(slug)
         self.charm.openssh.service.reload()
 
     @staticmethod
-    def _make_filename(integration: ops.Relation) -> str:
-        """Generate a configuration filename from relation metadata."""
-        return f"{integration.name}-{integration.id}-{integration.app}.conf"
+    def _make_slug(integration: ops.Relation) -> str:
+        """Make a filename slug for SSH configuration files storing integration data."""
+        return f"{integration.name}-{integration.id}-{integration.app.name}"

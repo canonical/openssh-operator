@@ -67,7 +67,7 @@ class SSHConfigObserver(Observer):
             raise StopCharm(
                 ops.BlockedStatus(
                     "Invalid SSH configuration received from "
-                    f"'{event.relation.app}'. "
+                    f"'{event.relation.app.name}'. "
                     "See `juju debug-log` for details"
                 )
             )

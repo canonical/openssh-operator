@@ -69,7 +69,7 @@ class TestLifecycleObserver:
 
         state_out = ctx.run(ctx.on.config_changed(), ops.testing.State())
 
-        assert mock_openssh.port is None
+        assert mock_openssh.port == 22
         assert mock_openssh.log_level == "info"
         mock_openssh.service.reload.assert_called_once()
         assert state_out.unit_status == ops.ActiveStatus()
@@ -98,16 +98,15 @@ class TestLifecycleObserver:
         assert state_out.unit_status == ops.ActiveStatus()
 
     def test_remove(self, ctx: ops.testing.Context, mock_openssh) -> None:
-        """Remove custom config files and reload, but never stop."""
+        """Clear custom config files and reload, but never stop."""
         mock_openssh.config.files = [
-            type("FakePath", (), {"name": "foo.conf"})(),
-            type("FakePath", (), {"name": "bar.conf"})(),
+            type("FakePath", (), {"name": "99-charmed-openssh-foo.conf"})(),
+            type("FakePath", (), {"name": "99-charmed-openssh-bar.conf"})(),
         ]
         mock_openssh.service.is_active.return_value = True
 
         ctx.run(ctx.on.remove(), ops.testing.State())
 
-        mock_openssh.config.remove.assert_any_call("foo.conf")
-        mock_openssh.config.remove.assert_any_call("bar.conf")
+        mock_openssh.config.clear.assert_called_once()
         mock_openssh.service.reload.assert_called_once()
         mock_openssh.service.stop.assert_not_called()

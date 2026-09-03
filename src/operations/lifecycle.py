@@ -58,14 +58,9 @@ class LifecycleObserver(Observer):
         """Apply configuration changes to the ``ssh`` service."""
         config = self.charm.typed_config.load()
 
+        self.charm.openssh.port = config.port
         self.charm.openssh.log_level = config.log_level
-
-        if config.port == 22:
-            del self.charm.openssh.port
-        else:
-            self.charm.openssh.port = config.port
-
-        self.charm.unit.open_port("tcp", config.port)
+        self.charm.unit.set_ports(config.port)
         self.charm.openssh.service.reload()
 
     @refresh
@@ -75,7 +70,5 @@ class LifecycleObserver(Observer):
         The ``ssh`` service **must not** be stopped or uninstalled,
         as ``juju ssh`` depends on a running ``ssh`` service on the machine.
         """
-        for file in self.charm.openssh.config.files:
-            self.charm.openssh.config.remove(file.name)
-
+        self.charm.openssh.config.clear()
         self.charm.openssh.service.reload()

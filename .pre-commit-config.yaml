@@ -22,7 +22,7 @@ repos:
         files: '\.py$'
         pass_filenames: false
       - id: test
-        name: Charm tests
+        name: Charm unit tests
         entry: just test unit
         language: system
         files: '\.py$'

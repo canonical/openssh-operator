@@ -15,8 +15,16 @@
 
 """``edge`` risk level tests for the OpenSSH charm."""
 
-from pytest_bdd import scenarios
+from pytest_bdd import parsers, scenarios, then
+from pytest_jubilant_bdd import Context
 
 from constants import EDGE_FEATURES  # pyright: ignore[reportAttributeAccessIssue]
 
 scenarios(*EDGE_FEATURES)
+
+
+@then(parsers.parse("the output should contain '{expected}'"))
+def assert_output(context: Context, expected: str) -> None:
+    """Assert the most recent exec result matches the expected output."""
+    task = context.exec_results.pop()
+    assert expected in task.stdout, f"output does not contain `{expected}`: {task.stdout}"

@@ -27,8 +27,8 @@ scenarios:
     And I add model 'openssh'
     And I switch to model 'openssh'
     And I deploy 'openssh' from a local charm located at 'openssh.charm'
-    And I deploy 'ubuntu' on base 'ubuntu@26.04' from channel 'latest/stable'
-    And I integrate 'openssh:juju-info' with 'ubuntu:juju-info'
+    And I deploy 'ubuntu' with name 'bare' on base 'ubuntu@26.04' from channel 'latest/stable'
+    And I integrate 'openssh:juju-info' with 'bare:juju-info'
     Then all agents are 'idle' in model 'openssh'
     And the workload status for app 'openssh' is 'active'
     And the workload status message for app 'openssh' is ''
@@ -56,3 +56,23 @@ scenarios:
     And I set 'port' for app 'openssh' to '22'
     Then all agents are 'idle' in model 'openssh'
     And the workload status for app 'openssh' is 'active'
+
+---
+feature: "Solution edge tests"
+type: solution
+status: implemented
+risk: edge
+description: >
+  Solution tests for the edge risk level
+scenarios:
+  - |-
+    Integrate OpenSSH with SSSD
+
+    Given I deploy 'sssd' from channel 'latest/edge' on base 'ubuntu@26.04'
+    And I integrate 'sssd:juju-info' with 'bare:juju-info'
+    And I integrate 'sssd:ssh-config' with 'openssh:ssh-config'
+    And the workload status for app 'sssd' is 'waiting'
+    And all agents are 'idle' in model 'openssh'
+    And I wait for '30' seconds
+    When I execute 'cat /etc/ssh/ssh_config.d/99-charmed-openssh-*.conf' on unit 'openssh/0'
+    Then the output should contain 'AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'

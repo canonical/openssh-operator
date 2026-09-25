@@ -99,9 +99,7 @@ class ExampleProviderCharm(ops.CharmBase):
         )
 
     def _on_ssh_config_connected(self, event: SSHConfigConnectedEvent) -> None:
-        data = SSHConfigData(
-            ssh_config="AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys\n"
-        )
+        data = SSHConfigData(ssh_config="AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys\n")
         self._ssh_config.set_config_data(data, integration_id=event.relation.id)
 ```
 

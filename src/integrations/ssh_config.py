@@ -70,14 +70,14 @@ class SSHConfigObserver(Observer):
                 )
             )
 
-        self.charm.openssh.service.reload()
+        self.charm.openssh.service.reload_or_restart()
 
     @refresh
     def _on_ssh_config_provider_disconnected(self, event: SSHConfigDisconnectedEvent) -> None:
         """Remove custom SSH configuration when the provider departs."""
         slug = self._make_slug(event.relation)
         self.charm.openssh.config.delete(slug)
-        self.charm.openssh.service.reload()
+        self.charm.openssh.service.reload_or_restart()
 
     @staticmethod
     def _make_slug(integration: ops.Relation) -> str:

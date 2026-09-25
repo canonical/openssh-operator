@@ -59,13 +59,13 @@ class TestSSHConfigObserver:
                 f"{SSH_CONFIG_INTEGRATION_NAME}-51-sssd", f"{_SSH_CONFIG}\n"
             )
             mock_openssh.config.validate.assert_called_once()
-            mock_openssh.service.reload.assert_called_once()
+            mock_openssh.service.reload_or_restart.assert_called_once()
 
         # Test `ssh_config_ready` hook when the configuration received from the
         # provider is invalid.
         mock_openssh.config.write.reset_mock()
         mock_openssh.config.validate.reset_mock()
-        mock_openssh.service.reload.reset_mock()
+        mock_openssh.service.reload_or_restart.reset_mock()
         mock_openssh.config.validate.side_effect = OpenSSHOpsError(
             "invalid ssh server configuration"
         )
@@ -81,7 +81,7 @@ class TestSSHConfigObserver:
             mock_openssh.config.delete.assert_called_once_with(
                 f"{SSH_CONFIG_INTEGRATION_NAME}-51-sssd"
             )
-            mock_openssh.service.reload.assert_not_called()
+            mock_openssh.service.reload_or_restart.assert_not_called()
 
         # Test `ssh_config_ready` hook when the provider has not published data yet.
         integration = testing.Relation(
@@ -99,7 +99,7 @@ class TestSSHConfigObserver:
         ) as manager:
             manager.run()
             mock_openssh.config.write.assert_not_called()
-            mock_openssh.service.reload.assert_not_called()
+            mock_openssh.service.reload_or_restart.assert_not_called()
 
         # Test `ssh_config_ready` hook when configuration data cannot be loaded.
         # This is a defensive path: the event only fires when the provider databag
@@ -115,7 +115,7 @@ class TestSSHConfigObserver:
         ) as manager:
             manager.run()
             mock_openssh.config.write.assert_not_called()
-            mock_openssh.service.reload.assert_not_called()
+            mock_openssh.service.reload_or_restart.assert_not_called()
 
     def test_ssh_config_provider_disconnected(
         self, mock_charm: testing.Context[OpenSSHCharm], mock_openssh
@@ -131,7 +131,7 @@ class TestSSHConfigObserver:
 
         # Test `ssh_config_disconnected` hook when the provider departs. The
         # configuration file received from the provider is deleted and the `ssh`
-        # service is reloaded.
+        # service is reloaded or restarted.
         mock_openssh.service.is_active.return_value = True
         with mock_charm(
             mock_charm.on.relation_broken(ssh_config_relation),
@@ -142,4 +142,4 @@ class TestSSHConfigObserver:
             mock_openssh.config.delete.assert_called_once_with(
                 f"{SSH_CONFIG_INTEGRATION_NAME}-51-sssd"
             )
-            mock_openssh.service.reload.assert_called_once()
+            mock_openssh.service.reload_or_restart.assert_called_once()

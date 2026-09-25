@@ -61,14 +61,14 @@ class LifecycleObserver(Observer):
         self.charm.openssh.port = config.port
         self.charm.openssh.log_level = config.log_level
         self.charm.unit.set_ports(config.port)
-        self.charm.openssh.service.reload()
+        self.charm.openssh.service.reload_or_restart()
 
     @refresh
     def _on_remove(self, _: ops.RemoveEvent) -> None:
-        """Remove custom configuration files and reload ``ssh``.
+        """Remove custom configuration files and reload or restart ``ssh``.
 
         The ``ssh`` service **must not** be stopped or uninstalled,
         as ``juju ssh`` depends on a running ``ssh`` service on the machine.
         """
         self.charm.openssh.config.clear()
-        self.charm.openssh.service.reload()
+        self.charm.openssh.service.reload_or_restart()

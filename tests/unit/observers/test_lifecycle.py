@@ -71,18 +71,18 @@ class TestLifecycleObserver:
 
         assert mock_openssh.port == 22
         assert mock_openssh.log_level == "info"
-        mock_openssh.service.reload.assert_called_once()
+        mock_openssh.service.reload_or_restart.assert_called_once()
         assert state_out.unit_status == ops.ActiveStatus()
 
     def test_config_changed_custom_port(self, ctx: ops.testing.Context, mock_openssh) -> None:
-        """Set a port override and reload the service."""
+        """Set a port override and reload or restart the service."""
         mock_openssh.service.is_active.return_value = True
 
         state_in = ops.testing.State(config={"port": 2222, "log-level": "info"})
         state_out = ctx.run(ctx.on.config_changed(), state_in)
 
         assert mock_openssh.port == 2222
-        mock_openssh.service.reload.assert_called_once()
+        mock_openssh.service.reload_or_restart.assert_called_once()
         assert state_out.unit_status == ops.ActiveStatus()
         assert any(p.port == 2222 for p in state_out.opened_ports)
 
@@ -94,11 +94,11 @@ class TestLifecycleObserver:
         state_out = ctx.run(ctx.on.config_changed(), state_in)
 
         assert mock_openssh.log_level == "debug"
-        mock_openssh.service.reload.assert_called_once()
+        mock_openssh.service.reload_or_restart.assert_called_once()
         assert state_out.unit_status == ops.ActiveStatus()
 
     def test_remove(self, ctx: ops.testing.Context, mock_openssh) -> None:
-        """Clear custom config files and reload, but never stop."""
+        """Clear custom config files and reload or restart, but never stop."""
         mock_openssh.config.files = [
             type("FakePath", (), {"name": "99-charmed-openssh-foo.conf"})(),
             type("FakePath", (), {"name": "99-charmed-openssh-bar.conf"})(),
@@ -108,5 +108,5 @@ class TestLifecycleObserver:
         ctx.run(ctx.on.remove(), ops.testing.State())
 
         mock_openssh.config.clear.assert_called_once()
-        mock_openssh.service.reload.assert_called_once()
+        mock_openssh.service.reload_or_restart.assert_called_once()
         mock_openssh.service.stop.assert_not_called()

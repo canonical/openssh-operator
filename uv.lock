@@ -329,7 +329,7 @@ dev = [
     { name = "pyfakefs" },
     { name = "pyright" },
     { name = "pytest" },
-    { name = "pytest-jubilant-bdd", specifier = "~=0.14" },
+    { name = "pytest-jubilant-bdd", specifier = "~=0.15" },
     { name = "pytest-mock" },
     { name = "ruff" },
 ]

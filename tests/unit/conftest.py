@@ -38,7 +38,7 @@ class _MockOpenSSH:
         self.config.validate = Mock()
 
         self.service = Mock()
-        self.service.reload = Mock()
+        self.service.reload_or_restart = Mock()
         self.service.stop = Mock()
         self.service.is_active = Mock(return_value=True)
 

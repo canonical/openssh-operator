@@ -13,7 +13,7 @@ variable "base" {
 variable "channel" {
   description = "Charmhub channel to deploy from"
   type        = string
-  default     = "latest/edge"
+  default     = "10/stable"
 }
 
 variable "config" {

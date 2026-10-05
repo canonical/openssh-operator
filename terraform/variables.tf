@@ -7,7 +7,7 @@ variable "app_name" {
 variable "base" {
   description = "Ubuntu base for the charm"
   type        = string
-  default     = null
+  default     = "ubuntu@26.04"
 }
 
 variable "channel" {

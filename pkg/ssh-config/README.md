@@ -9,7 +9,7 @@ The `ssh_config` interface enables charms to provide custom OpenSSH server
 configuration to a subordinate charm such as the `openssh` operator. A provider
 - for example, like the SSSD charm that needs the SSH daemon to query an LDAP server
 for user public keys - sends configuration snippets that the requirer writes
-into `/etc/ssh/ssh_config.d/`.
+into `/etc/ssh/sshd_config.d/`.
 
 To install, add `charmed-openssh-ssh-config-interface` to your Python
 dependencies.  Then in your Python code, import as:
@@ -128,7 +128,7 @@ class ExampleRequirerCharm(ops.CharmBase):
     def _on_ssh_config_ready(self, event: SSHConfigReadyEvent) -> None:
         data = self._ssh_config.get_config_data(event.relation.id)
         if data is not None:
-            # Write `data.ssh_config` to `/etc/ssh/ssh_config.d/` and
+            # Write `data.ssh_config` to `/etc/ssh/sshd_config.d/` and
             # reload the SSH daemon.
             self.unit.status = ops.ActiveStatus()
 ```

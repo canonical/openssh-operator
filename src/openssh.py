@@ -33,8 +33,8 @@ class OpenSSHConfigManager:
 
     @property
     def path(self):
-        """Path to the ``ssh`` server configuration directory."""
-        return Path("/etc/ssh/ssh_config.d")
+        """Path to the ``sshd`` server configuration directory."""
+        return Path("/etc/ssh/sshd_config.d")
 
     @property
     def files(self) -> list[Path]:
@@ -49,7 +49,7 @@ class OpenSSHConfigManager:
             return []
 
     def read(self, slug: str) -> str:
-        """Read the content of a configuration file under ``/etc/ssh/ssh_config.d``.
+        """Read the content of a configuration file under ``/etc/ssh/sshd_config.d``.
 
         Args:
             slug: Slug of the file to read.
@@ -64,7 +64,7 @@ class OpenSSHConfigManager:
             raise OpenSSHOpsError(f"failed to read '{file}'") from e
 
     def write(self, slug: str, content: str) -> None:
-        """Write a configuration file under ``/etc/ssh/ssh_config.d``.
+        """Write a configuration file under ``/etc/ssh/sshd_config.d``.
 
         Args:
             slug: Slug of file to write into.
@@ -99,7 +99,7 @@ class OpenSSHConfigManager:
             raise OpenSSHOpsError(f"invalid ssh server configuration:\n{result.stderr.strip()}")
 
     def delete(self, slug: str) -> None:
-        """Delete a configuration file from ``/etc/ssh/ssh_config.d``.
+        """Delete a configuration file from ``/etc/ssh/sshd_config.d``.
 
         Args:
             slug: Slug of the configuration file to remove.

@@ -98,7 +98,7 @@ the structure laid out in UHPC014:
 > function. Stopping or uninstalling `sshd` will sever Juju's ability to
 > reach the unit and can lock operators out of the machine entirely. On
 > `juju remove-application`, the charm must **only** remove the custom
-> configuration files it created under `/etc/ssh/ssh_config.d/` and reload
+> configuration files it created under `/etc/ssh/sshd_config.d/` and reload
 > the `sshd` service — never stop or purge `openssh-server`. Installation
 > must be idempotent: only install `openssh-server` if it is not already
 > present.
@@ -315,7 +315,7 @@ Other rules:
   first and wait for approval (see the human-in-the-loop protocol above).
 - Do __not__ stop or uninstall the `openssh`/`sshd` service from
   `juju remove-application`; only remove custom config files under
-  `/etc/ssh/ssh_config.d/` and reload. See the CRITICAL callout in the
+  `/etc/ssh/sshd_config.d/` and reload. See the CRITICAL callout in the
   Architecture conventions section.
 - All errors must be handled explicitly in Python code — no bare
   `subprocess.run(..., check=True)` outside a `try/except` that raises a

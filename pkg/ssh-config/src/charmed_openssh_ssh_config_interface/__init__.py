@@ -38,7 +38,7 @@ class SSHConfigData:
     Attributes:
         ssh_config:
             Custom configuration to place under
-            ``/etc/ssh/ssh_config.d`` on the requirer.
+            ``/etc/ssh/sshd_config.d`` on the requirer.
     """
 
     ssh_config: str

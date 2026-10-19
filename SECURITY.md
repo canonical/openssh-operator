@@ -3,7 +3,7 @@
 ## Supported versions
 
 Security updates for the OpenSSH charm will be released after vulnerabilities have been identified and fixed to
-the `latest/edge`, `latest/candidate` and `latest/stable` release channels.
+the `10/edge`, `10/beta`, `10/candidate` and `10/stable` release channels.
 
 ## Reporting a vulnerability
 

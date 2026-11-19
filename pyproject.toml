@@ -30,7 +30,7 @@ dependencies = [
 dev = [
     # Testing
     "coverage[toml]",
-    "jubilant>=1.8,<2",
+    "jubilant>=1.14.0,<2",
     "ops[testing] ~= 3.0",
     "pyfakefs",
     "pytest",

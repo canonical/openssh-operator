@@ -23,7 +23,7 @@ dependencies = [
     "charmed-hpc-libs[ops] ~= 0.5",
     "charmed-openssh-ssh-config-interface",
     "ops ~= 3.0",
-    "pydantic ~= 2.0",
+    "pydantic ~= 2.14",
 ]
 
 [dependency-groups]

@@ -18,9 +18,9 @@ version = "0.0.1"
 requires-python = ">=3.12"
 
 dependencies = [
-    "charmed-hpc-libs[errors] ~= 0.5",
-    "charmed-hpc-libs[interfaces] ~= 0.5",
-    "charmed-hpc-libs[ops] ~= 0.5",
+    "charmed-hpc-libs[errors] ~= 0.8",
+    "charmed-hpc-libs[interfaces] ~= 0.8",
+    "charmed-hpc-libs[ops] ~= 0.8",
     "charmed-openssh-ssh-config-interface",
     "ops ~= 3.0",
     "pydantic ~= 2.0",
